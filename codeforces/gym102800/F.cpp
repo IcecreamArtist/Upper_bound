@@ -20,6 +20,7 @@ ll temp[maxn];
 void solve(){
     memset(T,0,sizeof T);
     scanf("%d",&n);
+    printf("%d\n",n);
     for(int i=1;i<=n;++i){ scanf("%d",a+i); ++ a[i]; }
     ll sum = 0;
     for(int i=n;i>0;--i){   //Back, < a[i]

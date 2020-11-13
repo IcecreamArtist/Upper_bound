@@ -9,12 +9,12 @@ struct range{
 int n,l;
 int a,b;
 //f[i] = min{f[j]} + 1 where j < i
-int queue
+
 int main(){
 	scanf("%d%d",&n,&l);
 	scanf("%d%d",&a,&b);
 	for(int i=1;i<=n;++i){
-		scanf("%d%d",&r[i].s,&r[i].t);
+		
 	}
 	
 	return 0;

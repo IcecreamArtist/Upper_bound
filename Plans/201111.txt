@@ -1,0 +1,29 @@
+Of @WenDavid552
+1.Data Structures
+jyy版线段树
+Splay
+Treap
+树链剖分
+LCT
+
+2.Strings
+KMP
+SAM
+SA
+AC自动机
+
+3.Maths
+数论？mobius相关课件？
+组合数学我也不知道
+FFT
+线性基（xor）
+凸包
+
+4.Graph
+强连通，点边双联通（手写栈写法）
+匹配题（了解匈牙利、KM的原理，尤其是KM）
+网络流，费用流
+
+5.DP
+状压DP（连通性，广义括号，...）
+斜率优化

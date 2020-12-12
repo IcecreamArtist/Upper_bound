@@ -267,3 +267,195 @@ int main(){
 }
 
 ```
+# 二叉树
+已知先序中序求后序
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+void dfs(string xx,string zx){
+	if(!xx.size()) return;
+	int pos=zx.find(xx[0]);
+	dfs(xx.substr(1,pos),zx.substr(0,pos));
+	dfs(xx.substr(pos+1),zx.substr(pos+1));
+	printf("%c",xx[0]);
+}
+int main(){
+	string xx,zx;
+	cin>>zx>>xx;
+	dfs(xx,zx);
+	printf("\n");
+}
+
+```
+已知后序中序求前序
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+void dfs(string zx,string hx){
+	if(!zx.size())return;
+	int pos=zx.find(hx[hx.size()-1]);
+	printf("%c",zx[pos]);
+	dfs(zx.substr(0,pos),hx.substr(0,pos));
+	dfs(zx.substr(pos+1),hx.substr(pos,hx.size()-pos-1));
+} 
+int main(){
+	string zx,hx;
+	cin>>zx>>hx;
+	dfs(zx,hx);
+	printf("\n");
+}
+
+```
+已知先序后序求中序数目
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+int main(){
+	char a[400],b[400];
+	scanf("%s%s",a,b);
+	long long n=0;
+	for(int i=0;i<strlen(a)-1;i++)
+		for(int j=1;j<strlen(b);j++)
+			if(b[j]==a[i]&&a[i+1]==b[j-1]){
+				n++;continue;
+			}
+	printf("%lld\n",1<<n);
+}
+
+```
+# BST
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+const int inf=0x7fffffff;
+//BST
+int cont=0,ans;
+struct node{
+	int ls,rs,val,siz,cnt;
+}tree[500004];
+//x 现在的节点 y 值 
+void insert(int x,int y){
+	tree[x].siz++;
+	if(tree[x].val==y){
+		tree[x].cnt++;
+		return;
+	}
+	if(tree[x].val>y){
+		if(tree[x].ls!=0)
+			insert(tree[x].ls,y);
+		else{
+			cont++;
+			tree[x].ls=cont;
+			tree[cont].cnt=tree[cont].siz=1;
+			tree[cont].val=y;
+		}
+	}
+	else{
+		if(tree[x].rs!=0)
+			insert(tree[x].rs,y);
+		else{
+			cont++;
+			tree[x].rs=cont;
+			tree[cont].cnt=tree[cont].siz=1;
+			tree[cont].val=y;
+		}
+	}
+}
+//x 现在的节点 val 值 
+int search(int x,int val){
+	if(x==0) return 0;
+	if(val==tree[x].val)return tree[tree[x].ls].siz;
+	if(val>tree[x].val)return tree[tree[x].ls].siz+tree[x].cnt+search(tree[x].rs,val);
+	if(val<tree[x].val)return search(tree[x].ls,val);
+}
+//y排名 
+int search2(int x,int y){
+	if(x==0) return inf;
+	if(tree[tree[x].ls].siz>=y)return search2(tree[x].ls,y);
+	if(tree[tree[x].ls].siz+tree[x].cnt>=y)return tree[x].val;
+	if(y>tree[tree[x].ls].siz)return search2(tree[x].rs,y-tree[tree[x].ls].siz-tree[x].cnt);
+}
+//找前驱
+void searchf(int x,int val){
+	if(x==0) return;
+	if(tree[x].val<val){
+		ans=max(ans,tree[x].val);
+		searchf(tree[x].rs,val);
+	}
+	if(tree[x].val>=val){
+		searchf(tree[x].ls,val);
+	}
+}
+//找后继
+void searchl(int x,int val){
+	if(x==0) return;
+	if(tree[x].val>val){
+		ans=min(ans,tree[x].val);
+		searchl(tree[x].ls,val);
+	}
+	if(tree[x].val<=val){
+		searchl(tree[x].rs,val);
+	}
+}
+int main(){
+	int n;
+	int type,num;
+	scanf("%d",&n);
+	while(n--){
+		scanf("%d %d",&type,&num);
+		if(type==5){
+			if(cont==0){
+				cont++;
+				tree[1].cnt=tree[1].siz=1;
+				tree[1].val=num;
+			}
+			else insert(1,num);
+		}
+		if(type==1)printf("%d\n",search(1,num)+1);//查找排名 
+		if(type==2)printf("%d\n",search2(1,num));//依据排名查找数字 
+		if(type==3)ans=-inf,searchf(1,num),printf("%d\n",ans);//查找前驱 
+		if(type==4)ans=inf,searchl(1,num),printf("%d\n",ans);//查找后继 
+	}
+}
+
+```
+# 一元三次方程组
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+double a,b,c,d;
+
+double f(double x){
+	return a*x*x*x+b*x*x+c*x+d;
+}
+
+int main(){
+	int cnt=0;
+	double ans;
+	double l,r,m,tmp1,tmp2;
+	scanf("%lf%lf%lf%lf",&a,&b,&c,&d);
+	for(int i=-100;i<100;i++){
+		l=i,r=i+1;
+		tmp1=f(l),tmp2=f(r);
+		if(!tmp1){
+			printf("%.2lf ",l);
+			cnt++;
+			continue;
+		}
+		if(tmp1*tmp2<0){
+			while(r>=l){
+            	m=(l+r)/2;
+				if(f(m)*f(l)<=0)r=m-0.0001,ans=m;
+				else l=m+0.0001,ans=m;
+			}
+			printf("%.2lf ",ans);
+			cnt++;
+		}
+		if(cnt==3)break;
+	}
+	l=100;
+	if(cnt==2)printf("%.2lf ",l);
+	return 0;
+}
+
+```

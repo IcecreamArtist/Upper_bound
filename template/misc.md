@@ -266,3 +266,70 @@ void print(int x) {
 }
 
 ```
+# 尺取法
+```c++
+int main(){
+	ull s;
+	int t;
+	scanf("%d",&t);
+	while(t--){
+		int n;
+		scanf("%d%llu",&n,&s);
+		for(int i=1;i<=n;i++){
+			scanf("%d",&a[i]);
+		}
+		deque<int>q;
+		q.clear();
+		ull sum=0;
+		int i=1;
+		int len=0,ans=inf;
+		while(1){
+			while(i<=n&&sum<s){
+				sum+=a[i];
+				q.push_back(a[i++]);
+				len++;
+			}
+			if(sum<s) break;
+			ans=min(ans,len);
+			len--;
+			sum-=q.front();
+			q.pop_front();
+		}
+		if(ans==inf) printf("0\n");
+		else printf("%d\n",ans);
+	}
+}
+```
+```c++
+int main(){
+	int p;
+	int num=0;
+	scanf("%d",&p);
+	map<int,int>mp; 
+	for(int i=1;i<=p;i++){
+		scanf("%d",&a[i]);
+		if(!mp[a[i]]) num++;
+		mp[a[i]]=1;
+	}
+	mp.clear();
+	deque<int>q;
+	int cnt=0;
+	int i=1;
+	int ans=inf;
+	while(1){
+		while(i<=p&&cnt<num){
+			if(mp[a[i]]==0) cnt++;
+			mp[a[i]]++;
+			q.push_back(a[i++]);
+		}
+		if(cnt<num) break;
+		int len=q.size();
+		ans=min(ans,len);
+		mp[q.front()]--;
+		if(mp[q.front()]==0) cnt--;
+		q.pop_front();
+	}
+	printf("%d\n",ans);
+}
+
+```

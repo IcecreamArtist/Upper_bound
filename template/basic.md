@@ -170,6 +170,100 @@ int main(){
 }
 ```
 # 分治
-## CDQ分治
+题意：有一个长度为n的数组a, (a1,a2,…,an)，选一个整数x，让 (ai^x)中的最大值最小.
+思路：看了题解，大意就是，因为最高位更小的话得到的数字一定更小，所以我们从最高位开始考虑。但是最高位的选择又会影响到下一位的选择，因此我们使用dfs的逻辑dp遍历。
+只考虑当前的位。如果数组中所有数字在这一位都为0或都为1，那么答案的这一位（最小的最大值）可以为0。但如果这一位有的是1，有的是0，那么不管我们在这一位选择1还是0，答案的这一位必然都是1。但是这一位到底选择1还是0呢？这个决定会影响接下来跟随哪些数字寻找最大值。那么我们就用dfs的dp，找寻两个情况的最小值即可。
+```c++
+#include<bits/stdc++.h>
+using namespace std;
+int a[100004];
+int dfs(vector<int> v,int bit){
+	if(bit<0) return 0;
+	vector<int> v0,v1;
+	for(auto &i:v){
+		if((i>>bit)&1) v1.push_back(i);
+		else v0.push_back(i);
+	}
+	if(v0.empty()) return dfs(v1,bit-1);
+	if(v1.empty()) return dfs(v0,bit-1);
+	return min(dfs(v0,bit-1),dfs(v1,bit-1))+(1<<bit);
+}
+int main(){
+	int n;
+	vector<int> v;
+	scanf("%d",&n);
+	for(int i=1;i<=n;i++){
+		scanf("%d",&a[i]);
+		v.push_back(a[i]);
+	}
+	printf("%d\n",dfs(v,30));
+}
+
+```
 
 # 分块
+# 压缩图
+注意：有时候可能要专门加进去一个边界点。
+```c++
+int main(){
+	int n,m;
+	scanf("%d%d",&n,&m);
+	for(int i=0;i<n;i++){
+		scanf("%d",&a[i]);
+		scanf("%d",&b[i]);
+		scanf("%d",&c[i]);
+		xx.push_back(a[i]);
+		xx.push_back(b[i]);
+		yy.push_back(c[i]);
+	}
+	for(int i=0;i<m;i++){
+		scanf("%d",&D[i]);
+		scanf("%d",&e[i]);
+		scanf("%d",&f[i]);
+		xx.push_back(D[i]);
+		yy.push_back(e[i]);
+		yy.push_back(f[i]);
+	}
+	sort(xx.begin(),xx.end());//先按照从小到大sort
+	sort(yy.begin(),yy.end());
+	xx.resize(unique(xx.begin(),xx.end())-xx.begin());//然后把重复项去掉！（压缩）
+	yy.resize(unique(yy.begin(),yy.end())-yy.begin());
+	for(int i=0;i<n;i++){
+		//接下来对于每条线段，先把线段查找出来，再用新的压缩坐标标记。
+		//新的压缩坐标是vector中的下标。
+		int aa=lower_bound(xx.begin(),xx.end(),a[i])-xx.begin();
+		int bb=lower_bound(xx.begin(),xx.end(),b[i])-xx.begin();
+		int cc=lower_bound(yy.begin(),yy.end(),c[i])-yy.begin();
+		for(int x=aa;x<bb;x++){
+			u[x][cc-1]=1;
+			d[x][cc]=1;
+		}
+	}
+	for(int i=0;i<m;i++){
+		int dd=lower_bound(xx.begin(),xx.end(),D[i])-xx.begin();
+		int ee=lower_bound(yy.begin(),yy.end(),e[i])-yy.begin();
+		int ff=lower_bound(yy.begin(),yy.end(),f[i])-yy.begin();
+		for(int y=ee;y<ff;y++){
+			l[dd][y]=1;
+			r[dd-1][y]=1;
+		}
+	}
+	//找到牛位置
+	int x=lower_bound(xx.begin(),xx.end(),0)-xx.begin();
+	int y=lower_bound(yy.begin(),yy.end(),0)-yy.begin();
+	//用左下角方格做起点
+	bfs(x-1,y-1);
+	if(vis[0][0]){
+		printf("INF\n");return 0;
+	}
+	ll ans=0;
+	for(int i=0;i<xx.size()-1;i++){
+		for(int j=0;j<yy.size()-1;j++){
+			if(vis[i][j]) ans+=(ll)(xx[i+1]-xx[i])*(yy[j+1]-yy[j]); 
+			// 用后一个方块的最前端减去当前方块最前端代表当前方块的边长
+		}
+	}
+	printf("%lld\n",ans);
+}
+
+```

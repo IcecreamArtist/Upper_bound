@@ -1,80 +1,68 @@
 #include <bits/stdc++.h>
-#define pb push_back
-#define fi first
-#define se second
-#define ll long long
-#define fo(i, a, b) for (int i = (a); i <= (b); ++i)
 using namespace std;
-const int maxn = 3e5 + 10;
-const int maxs = 600;
-int n, q;
-int a[maxn];
-int sum[maxs][maxn], cc[maxs][maxs];
-int tmp[maxn];
+typedef pair<int, int> pii;
+const int maxn = 3e5 + 233;
+set<int> st;
+unordered_map<int, int> ump;
+int block, n, m, a[maxn], ans[maxn], cnt, p[maxn], num[maxn];
+struct qs
+{
+    int l, r, idx;
+} b[maxn];
+bool cmp(const qs &x, const qs &y)
+{
+    return (x.l / block) == (y.l / block) ? x.r < y.r : x.l < y.l;
+}
+inline void pls(int x)
+{
+    num[p[a[x]]++]--;
+    int t = p[a[x]];
+    num[t]++;
+    if (t > cnt)
+        cnt = t;
+}
+inline void sbs(int x)
+{
+    num[p[a[x]]--]--;
+    int t = p[a[x]];
+    num[t]++;
+    while (!num[cnt])
+        cnt--;
+}
 int main()
 {
-    scanf("%d%d", &n, &q);
-    for (int i = 0; i < n; ++i)
-        scanf("%d", a + i);
-    int bl = sqrt(n) + 1;
-    int cnt = (n + bl - 1) / bl;
-    for (int i = 1; i <= bl; ++i)
+    cin >> n >> m;
+    block = n / sqrt(m * 2 / 3);
+    for (int i = 1; i <= n; i++)
+        scanf("%d", &a[i]), st.insert(a[i]);
+    for (int i = 1; i <= m; i++)
     {
-        for (int j = 0; j < n; ++j)
-            sum[i][j] = sum[i - 1][j];
-        for (int j = (i - 1) * cnt; j < n && j < i * cnt; ++j)
-            sum[i][a[j]]++;
+        scanf("%d%d", &b[i].l, &b[i].r);
+        b[i].idx = i;
     }
-    for (int i = 1; i <= bl; ++i)
+    int tot = 0;
+    for (auto it = st.begin(); it != st.end(); it++)
     {
-        for (int j = i; j <= bl; ++j)
-        {
-            cc[i][j] = cc[i][j - 1];
-            for (int k = (j - 1) * cnt; k < n && k < j * cnt; ++k)
-            {
-                int x = sum[j][a[k]] - sum[i - 1][a[k]];
-                if (x > cc[i][j])
-                {
-                    cc[i][j] = x;
-                }
-            }
-        }
+        ump[*it] = ++tot;
     }
-    while (q--)
+    for (int i = 1; i <= n; i++)
+        a[i] = ump[a[i]];
+    stable_sort(b + 1, b + 1 + m, cmp);
+    int l = 0, r = 0;
+    for (int i = 1; i <= m; i++)
     {
-        int L, R;
-        scanf("%d%d", &L, &R);
-        --L;
-        --R;
-        int x = L / cnt + 1, y = R / cnt + 1;
-        int ans = cc[x + 1][y - 1];
-        for (int i = L; i <= R && i < x * cnt; i++)
-            tmp[a[i]] = max(0, sum[y - 1][a[i]] - sum[x][a[i]]);
-        for (int i = max(L, (y - 1) * cnt); i <= R; i++)
-            tmp[a[i]] = max(0, sum[y - 1][a[i]] - sum[x][a[i]]);
-        for (int i = L; i < x * cnt && i <= R; i++)
-        {
-            tmp[a[i]]++;
-            if (tmp[a[i]] > ans)
-            {
-                ans = tmp[a[i]];
-            }
-        }
-        if (x != y)
-        {
-            for (int i = (y - 1) * cnt; i <= R; i++)
-            {
-                tmp[a[i]]++;
-                if (tmp[a[i]] > ans)
-                {
-                    ans = tmp[a[i]];
-                }
-            }
-        }
-        if (ans <= (R - L + 1 + 1) / 2)
-            printf("1\n");
-        else
-            printf("%d\n", ans * 2 - (R - L + 1));
+        while (b[i].l < l)
+            pls(--l);
+        while (b[i].l > l)
+            sbs(l++);
+        while (b[i].r < r)
+            sbs(r--);
+        while (b[i].r > r)
+            pls(++r);
+        if(cnt <= (b[i].r - b[i].l + 1) / 2) ans[b[i].idx] = 1;
+        else ans[b[i].idx] = cnt*2 - (b[i].r - b[i].l + 1);
     }
-    return 0;
+    for (int i = 1; i <= m; i++){
+        printf("%d\n", ans[i]);
+    }
 }
